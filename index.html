@@ -91,7 +91,7 @@
   #s-cta .big-title{font-size:clamp(44px,9vw,126px);animation:breath 4.2s ease-in-out infinite;text-align:center}
   #s-cta .big-title .l1{color:var(--text)}
   #s-cta .big-title .l2{color:transparent;-webkit-text-stroke:1.5px rgba(0,229,255,.55)}
-  @keyframes breath{0%,100%{transform:scale(1);filter:drop-shadow(0 0 20px rgba(0,229,255,.25))}50%{transform:scale(1.028);filter:drop-shadow(0 0 46px rgba(0,229,255,.6))}}
+  @keyframes breath{0%,100%{transform:scale(1);filter:drop-shadow(0 0 24px rgba(0,229,255,.3))}50%{transform:scale(1.035);filter:drop-shadow(0 0 56px rgba(0,229,255,.65))}}
   .btn{position:relative;display:inline-block;margin-top:46px;padding:17px 46px;font-family:var(--orb);font-size:13px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;overflow:hidden;border:1px solid rgba(0,229,255,.5);color:var(--cyan);background:rgba(0,229,255,.06);transition:box-shadow .35s;z-index:3}
   .btn::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateY(101%);transition:transform .4s cubic-bezier(.7,0,.2,1)}
   .btn:hover{color:#03050c;box-shadow:0 0 34px rgba(0,229,255,.55)}
@@ -358,7 +358,7 @@ let gx=innerWidth/2,gy=innerHeight/2;
   const ctx=canvas.getContext('2d');
   let W,H,DPR2=DPR, targets=[], pts=[], morphing=false, formed=false;
   const C=document.createElement('canvas'); C.width=880; C.height=380;
-  const c2=C.getContext('2d');
+  const c2=C.getContext('2d',{willReadFrequently:true});
   function sample(){
     try{ document.fonts.load('900 210px Orbitron'); }catch(e){}
     c2.clearRect(0,0,C.width,C.height);
@@ -458,7 +458,7 @@ let gx=innerWidth/2,gy=innerHeight/2;
         vx:(Math.random()-.5)*0.55, vy:(Math.random()-.5)*0.55,
         r0:70+Math.random()*150,
         col:cols[i%cols.length],
-        al:0.045+Math.random()*0.05,
+        al:0.06+Math.random()*0.06,
         sp:0.4+Math.random()*0.8, ph:Math.random()*Math.PI*2
       });
     }
