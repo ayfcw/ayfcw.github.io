@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello GitHub Pages</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+    }
+    .card {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 60px 70px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+    h1 { font-size: 42px; margin-bottom: 16px; letter-spacing: 2px; }
+    p { font-size: 18px; color: #aab3c8; margin-bottom: 30px; }
+    .badge {
+      display: inline-block;
+      background: #2ea44f;
+      color: #fff;
+      font-size: 14px;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .time { margin-top: 30px; font-size: 14px; color: #6b7a99; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Hello, GitHub Pages!</h1>
+    <p>这个页面由豆包自动生成并部署到 GitHub。</p>
+    <span class="badge">部署成功</span>
+    <div class="time" id="time"></div>
+  </div>
+  <script>
+    document.getElementById('time').textContent = '当前时间：' + new Date().toLocaleString('zh-CN');
+  </script>
+</body>
+</html>
