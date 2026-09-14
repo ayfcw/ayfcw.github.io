@@ -1,601 +1,296 @@
 <!DOCTYPE html>
+<!-- design-intent: type-led — 本页以排版与文字为视觉主角，不依赖图片资产 -->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AYFCW // IMMERSIVE TECH</title>
-<meta name="description" content="AYFCW — 粒子 · 流体 · 3D 沉浸式动效单页">
+<title>Sirius — 个人作品集</title>
+<meta name="description" content="Sirius — 独立开发者 · 个人作品集">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
 <style>
   :root{
-    --bg:#03050c; --bg2:#070c1a;
-    --cyan:#00e5ff; --violet:#8b5cf6; --pink:#ff3d81;
-    --text:#e8f1ff; --muted:#71809f;
-    --mono:'Share Tech Mono',monospace; --orb:'Orbitron',sans-serif; --raj:'Rajdhani',sans-serif;
-    --line:rgba(94,140,255,.12);
+    /* 色板：天狼星（夜空）语义 —— 星蓝为唯一强调色 */
+    --canvas:#F2F4F6;        /* 浅冷灰底 */
+    --canvas2:#EBEDF1;       /* 次级面 */
+    --world:#0E1520;         /* 深蓝夜空 */
+    --world2:#182232;        /* 夜空提亮 */
+    --ink:#171A21;           /* 墨蓝黑文字 */
+    --muted:#5D6675;         /* 冷灰辅助文字 */
+    --accent:#2E4A7C;        /* 星蓝：链接 / CTA / 箭头 */
+    --accent2:#46669C;       /* 星蓝 hover */
+    --line:rgba(23,26,33,.09);
+    --line-strong:rgba(23,26,33,.18);
+    --line-light:rgba(255,255,255,.13);
+    --display:'Fraunces',Georgia,'Songti SC',serif;
+    --body:'Manrope','PingFang SC','Microsoft YaHei',system-ui,sans-serif;
+    --r-shell:28px; --r-card:12px; --r-control:8px; --r-pill:999px;
+    --shadow-card:0 1px 2px rgba(23,26,33,.04),0 12px 24px -10px rgba(23,26,33,.08),0 32px 64px -32px rgba(23,26,33,.12);
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:auto}
-  body{background:var(--bg);color:var(--text);font-family:var(--raj);font-size:17px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-  ::selection{background:var(--cyan);color:#03050c}
+  html{scroll-behavior:smooth}
+  body{background:var(--canvas);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--accent);color:#fff}
   a{color:inherit;text-decoration:none}
-  /* 全局网格 + 噪点 */
-  .grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,229,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 85% 75% at 50% 40%,#000 25%,transparent 78%);-webkit-mask-image:radial-gradient(ellipse 85% 75% at 50% 40%,#000 25%,transparent 78%)}
-  .noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-  /* 预加载器 */
-  #preloader{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px}
-  #preloader .pm{font-family:var(--orb);font-size:22px;letter-spacing:12px;color:var(--cyan);text-shadow:0 0 24px rgba(0,229,255,.75)}
-  #preloader .pb{width:240px;height:2px;background:rgba(0,229,255,.14);overflow:hidden;position:relative}
-  #preloader .pb i{position:absolute;inset:0;background:var(--cyan);box-shadow:0 0 14px var(--cyan);transform:scaleX(0);transform-origin:left}
-  #preloader .pn{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:3px}
-  /* 光标光晕 */
-  #glow{position:fixed;width:640px;height:640px;left:0;top:0;z-index:0;pointer-events:none;background:radial-gradient(circle,rgba(0,229,255,.09),rgba(139,92,246,.05) 42%,transparent 66%);transform:translate(-50%,-50%);border-radius:50%}
-  /* 导航 */
-  nav{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:22px 4vw;transition:background .4s,border-color .4s,backdrop-filter .4s;border-bottom:1px solid transparent}
-  nav.sc{background:rgba(3,5,12,.7);backdrop-filter:blur(16px);border-bottom-color:var(--line);padding:13px 4vw}
-  .logo{font-family:var(--orb);font-weight:700;font-size:17px;letter-spacing:4px;display:flex;align-items:center;gap:10px}
-  .logo .dot{width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan);animation:pl 2s infinite}
-  @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-  nav .lk{display:flex;gap:26px}
-  nav .lk a{font-size:12px;letter-spacing:2px;color:var(--muted);position:relative;font-weight:600;transition:color .3s}
-  nav .lk a:hover{color:var(--cyan)}
-  nav .lk a::after{content:'';position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--cyan);box-shadow:0 0 8px var(--cyan);transition:width .3s}
-  nav .lk a:hover::after{width:100%}
-  nav .st{font-family:var(--mono);font-size:11px;color:var(--cyan);display:flex;align-items:center;gap:8px}
-  nav .st i{width:7px;height:7px;background:#2effb0;border-radius:50%;box-shadow:0 0 8px #2effb0;animation:pl 1.4s infinite}
-  /* 区块通用 */
-  section{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:2}
-  .wrap{position:relative;z-index:3;max-width:1300px;margin:0 auto;padding:0 5vw;width:100%}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:4px;color:var(--cyan);display:flex;align-items:center;gap:14px;text-transform:uppercase;margin-bottom:22px}
-  .tag::before{content:'';width:36px;height:1px;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-  .big-title{font-family:var(--orb);font-weight:900;text-transform:uppercase;line-height:1;letter-spacing:2px}
-  .ghost{color:transparent;-webkit-text-stroke:1px rgba(0,229,255,.45)}
-  .grad{background:linear-gradient(100deg,var(--cyan),var(--violet),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{color:var(--muted);font-size:17px;max-width:520px;margin-top:18px}
-  .sub b{color:var(--text);font-weight:600}
-  canvas{display:block}
-  /* ===== Section 1 HERO ===== */
-  #s-hero{background:transparent}
-  #hero-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%}
-  #s-hero .wrap{text-align:center;display:flex;flex-direction:column;align-items:center}
-  #s-hero h1{font-size:clamp(64px,14vw,200px);font-family:var(--orb);font-weight:900;letter-spacing:.04em;line-height:.92;position:relative}
-  #s-hero h1 .g{background:linear-gradient(180deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 34px rgba(0,229,255,.55))}
-  #s-hero h1 .l2{display:block;font-size:.52em;color:transparent;-webkit-text-stroke:1.5px rgba(232,241,255,.6);letter-spacing:.3em}
-  #s-hero .sub{margin-top:26px}
-  .hud{position:absolute;top:26vh;right:4vw;z-index:3;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:2.1;text-align:right;border-right:1px solid var(--line);padding-right:14px;display:none}
-  @media(min-width:960px){.hud{display:block}}
-  .hud b{color:var(--cyan);font-weight:400}
-  .scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--muted)}
-  .scroll-hint .wh{width:22px;height:36px;border:1px solid var(--line);border-radius:12px;position:relative}
-  .scroll-hint .wh::after{content:'';position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;background:var(--cyan);border-radius:2px;box-shadow:0 0 8px var(--cyan);animation:wh 1.8s infinite}
-  @keyframes wh{0%{opacity:1;transform:translateY(0)}70%{opacity:0;transform:translateY(12px)}100%{opacity:0}}
-  /* ===== Section 2 MORPH ===== */
-  #s-morph{background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(8,14,32,.7),transparent)}
-  #s-morph .wrap{text-align:center}
-  #morph-canvas{width:min(92vw,880px);height:min(46vh,380px);margin:30px auto 0;cursor:crosshair}
-  .hint2{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:3px;margin-top:14px;opacity:.7}
-  /* ===== Section 3 FLUID ===== */
-  #s-fluid{background:#02040a}
-  #fluid-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;filter:blur(30px) saturate(1.35) brightness(1.05)}
-  #s-fluid .wrap{text-align:center}
-  #s-fluid .big-title{font-size:clamp(44px,9vw,120px)}
-  /* ===== Section 4 3D ===== */
-  #s-3d{background:transparent}
-  #obj-canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%}
-  #s-3d .wrap{text-align:center}
-  #s-3d .big-title{font-size:clamp(38px,7vw,96px)}
-  /* ===== Section 5 CTA ===== */
-  #s-cta{background:radial-gradient(ellipse 70% 60% at 50% 55%,rgba(139,92,246,.10),rgba(0,229,255,.05) 40%,transparent 70%)}
-  #s-cta .big-title{font-size:clamp(44px,9vw,126px);animation:breath 4.2s ease-in-out infinite;text-align:center}
-  #s-cta .big-title .l1{color:var(--text)}
-  #s-cta .big-title .l2{color:transparent;-webkit-text-stroke:1.5px rgba(0,229,255,.55)}
-  @keyframes breath{0%,100%{transform:scale(1);filter:drop-shadow(0 0 24px rgba(0,229,255,.3))}50%{transform:scale(1.035);filter:drop-shadow(0 0 56px rgba(0,229,255,.65))}}
-  .btn{position:relative;display:inline-block;margin-top:46px;padding:17px 46px;font-family:var(--orb);font-size:13px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;overflow:hidden;border:1px solid rgba(0,229,255,.5);color:var(--cyan);background:rgba(0,229,255,.06);transition:box-shadow .35s;z-index:3}
-  .btn::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateY(101%);transition:transform .4s cubic-bezier(.7,0,.2,1)}
-  .btn:hover{color:#03050c;box-shadow:0 0 34px rgba(0,229,255,.55)}
-  .btn:hover::before{transform:translateY(0)}
-  .btn span{position:relative;z-index:1}
-  footer{margin-top:90px;padding-top:28px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;z-index:3;position:relative}
-  footer b{color:var(--cyan);font-weight:400}
-  .pct-idx{position:fixed;left:22px;bottom:22px;z-index:80;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px}
-  .pct-idx b{color:var(--cyan);font-weight:400}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 36px}
+
+  /* ============ 导航 ============ */
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;border-bottom:1px solid transparent;transition:background .35s,backdrop-filter .35s,border-color .35s}
+  nav.sc{background:rgba(242,244,246,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .logo{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:.02em;display:inline-flex;align-items:center;gap:9px}
+  .logo svg{color:var(--accent)}
+  .lk{display:flex;align-items:center;gap:30px}
+  .lk a{font-size:.8rem;font-weight:600;letter-spacing:.1em;color:var(--muted);transition:color .25s}
+  .lk a:hover{color:var(--accent)}
+  .lk .gh{display:inline-flex;color:var(--ink);transition:color .25s}
+  .lk .gh:hover{color:var(--accent)}
+
+  /* ============ Hero ============ */
+  #hero{padding:186px 0 120px;text-align:center}
+  .kicker{font-size:.7rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:14px}
+  .kicker::before,.kicker::after{content:'';width:28px;height:1px;background:var(--line-strong)}
+  h1{font-family:var(--display);font-weight:600;font-size:clamp(3.5rem,12vw,7.75rem);line-height:1.02;letter-spacing:-.015em;margin:30px 0 24px}
+  h1 .star{display:inline-block;vertical-align:top;color:var(--accent);font-size:.34em;line-height:1;margin:0.18em 0 0 .06em}
+  .lede{color:var(--muted);font-size:1.07rem;max-width:540px;margin:0 auto}
+  .lede b{color:var(--ink);font-weight:600}
+  .cta-row{display:flex;gap:14px;justify-content:center;margin-top:46px}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;font-size:.82rem;font-weight:700;letter-spacing:.08em;border-radius:var(--r-pill);transition:transform .25s,background .25s,color .25s,border-color .25s,box-shadow .25s}
+  .btn-p{background:var(--accent);color:#fff;box-shadow:0 10px 26px -12px rgba(46,74,124,.55)}
+  .btn-p:hover{background:var(--accent2);transform:translateY(-2px)}
+  .btn-o{border:1px solid var(--line-strong);color:var(--ink)}
+  .btn-o:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+
+  /* ============ Work：编辑式列表 ============ */
+  #work{border-top:1px solid var(--line);padding:96px 0 104px}
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:14px}
+  .sec-title{font-family:var(--display);font-weight:600;font-size:clamp(2.1rem,4.5vw,3.2rem);letter-spacing:-.01em}
+  .sec-note{font-size:.82rem;color:var(--muted);max-width:380px;text-align:right}
+  .work-list{border-top:1px solid var(--line-strong);margin-top:40px}
+  .work-item{display:grid;grid-template-columns:150px 1fr 44px;gap:28px;align-items:center;padding:34px 10px;border-bottom:1px solid var(--line);transition:background .3s,padding .3s}
+  .work-item:hover{background:var(--canvas2)}
+  .work-item:hover .w-title{color:var(--accent)}
+  .work-item:hover .w-arrow{transform:translate(4px,-4px);color:var(--accent)}
+  .w-year{font-size:.78rem;font-weight:600;letter-spacing:.12em;color:var(--muted)}
+  .w-title{font-family:var(--display);font-weight:600;font-size:1.6rem;letter-spacing:-.01em;transition:color .3s}
+  .w-desc{color:var(--muted);font-size:.95rem;margin-top:6px;max-width:640px}
+  .w-tags{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .w-tags span{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--muted);border:1px solid var(--line);border-radius:var(--r-pill);padding:4px 12px;transition:border-color .3s,color .3s}
+  .work-item:hover .w-tags span{border-color:var(--line-strong)}
+  .w-arrow{display:inline-flex;color:var(--muted);transition:transform .3s,color .3s}
+  .w-note{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+  /* ============ About ============ */
+  #about{background:var(--canvas2);padding:104px 0}
+  .about-grid{display:grid;grid-template-columns:200px 1fr;gap:56px}
+  .about-label{font-size:.7rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);padding-top:8px}
+  .about-body p{max-width:640px;font-size:1.12rem;line-height:1.9;color:var(--ink)}
+  .about-body p + p{margin-top:18px}
+  .about-body .muted{color:var(--muted);font-size:1rem}
+  .focus-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+  .focus-row span{font-size:.72rem;font-weight:700;letter-spacing:.1em;color:var(--accent);border:1px solid rgba(46,74,124,.28);border-radius:var(--r-pill);padding:7px 16px;background:rgba(46,74,124,.05)}
+
+  /* ============ Contact：夜空 ============ */
+  #contact{background:var(--world);color:#E7EBF2;padding:120px 0 44px;position:relative;overflow:hidden}
+  .stars{position:absolute;inset:0;pointer-events:none}
+  .stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.5);animation:twinkle 3.4s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+  #contact .wrap{position:relative;z-index:2;text-align:center}
+  .c-kicker{font-size:.7rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#8FA1BC;display:inline-flex;align-items:center;gap:14px}
+  .c-kicker::before,.c-kicker::after{content:'';width:28px;height:1px;background:var(--line-light)}
+  .c-title{font-family:var(--display);font-weight:600;font-size:clamp(2.4rem,5.5vw,4rem);letter-spacing:-.01em;margin:26px 0 14px}
+  .c-sub{color:#9AA9BE;font-size:1.02rem;max-width:460px;margin:0 auto}
+  .c-links{display:flex;gap:14px;justify-content:center;margin-top:44px;flex-wrap:wrap}
+  .c-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;font-size:.82rem;font-weight:700;letter-spacing:.08em;border-radius:var(--r-pill);border:1px solid rgba(255,255,255,.22);color:#E7EBF2;transition:background .3s,border-color .3s,transform .3s,color .3s}
+  .c-btn:hover{border-color:#fff;transform:translateY(-2px)}
+  .c-btn.gh:hover{background:#fff;color:#0E1520}
+  .c-mail{font-family:var(--body);font-size:.9rem;color:#8FA1BC;margin-top:30px;letter-spacing:.04em}
+  footer{border-top:1px solid var(--line-light);margin-top:86px;padding-top:30px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:.74rem;letter-spacing:.1em;color:#6E7E94;position:relative;z-index:2}
+  footer b{color:#C6D0DE;font-weight:600}
+
+  /* ============ 滚动揭示（js 类存在时才隐藏初始态） ============ */
+  .js .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.65,.25,1),transform .8s cubic-bezier(.2,.65,.25,1)}
+  .js .reveal.in{opacity:1;transform:none}
+  .js .reveal-d1{transition-delay:.08s}
+  .js .reveal-d2{transition-delay:.16s}
+  .js .reveal-d3{transition-delay:.24s}
+
+  /* ============ 移动端 ============ */
   @media(max-width:820px){
-    nav .lk,.st{display:none}
-    #s-hero h1{font-size:clamp(54px,20vw,120px)}
+    .wrap{padding:0 22px}
+    #hero{padding:140px 0 84px}
+    .lk{gap:18px}
+    .lk a{font-size:.72rem;letter-spacing:.06em}
+    .work-item{grid-template-columns:1fr;gap:10px;padding:26px 4px;position:relative;padding-right:46px}
+    .w-title{font-size:1.35rem}
+    .w-arrow{position:absolute;right:4px;top:50%;transform:translateY(-50%)}
+    .work-item:hover .w-arrow{transform:translate(4px,calc(-50% - 4px))}
+    .about-grid{grid-template-columns:1fr;gap:24px}
+    .sec-note{text-align:left}
+    .sec-head{flex-direction:column;gap:8px}
+    footer{flex-direction:column;gap:8px}
   }
-  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .js .reveal{opacity:1;transform:none}
+  }
 </style>
 </head>
 <body>
 
-<div class="grid-bg"></div>
-<div class="noise"></div>
-<div id="glow"></div>
-<div class="pct-idx">SCROLLING <b id="idx">01</b> / 05</div>
-
-<div id="preloader">
-  <div class="pm">AYFCW</div>
-  <div class="pb"><i></i></div>
-  <div class="pn">INITIALIZING IMMERSIVE SYSTEM — <span id="pct">0</span>%</div>
-</div>
-
 <nav id="nav">
-  <div class="logo"><span class="dot"></span>AYFCW<span style="color:var(--muted)">.IO</span></div>
-  <div class="lk">
-    <a href="#s-hero">01 UNIVERSE</a>
-    <a href="#s-morph">02 METAMORPH</a>
-    <a href="#s-fluid">03 LIQUID</a>
-    <a href="#s-3d">04 CORE</a>
-    <a href="#s-cta">05 CONTACT</a>
+  <div class="wrap">
+    <a class="logo" href="#hero" aria-label="Sirius 首页">
+      <svg width="15" height="15" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z"/></svg>
+      Sirius
+    </a>
+    <div class="lk">
+      <a href="#work">作品</a>
+      <a href="#about">关于</a>
+      <a href="#contact">联系</a>
+      <a class="gh" href="https://github.com/ayfcw" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.31,75.68A59.78,59.78,0,0,0,202.93,28,8,8,0,0,0,196,24a59.75,59.75,0,0,0-48,24H124A59.75,59.75,0,0,0,76,24a8,8,0,0,0-6.93,4,59.78,59.78,0,0,0-5.38,47.68A58.14,58.14,0,0,0,56,104v8a56.06,56.06,0,0,0,48.44,55.47A39.8,39.8,0,0,0,96,192v8H72a24,24,0,0,1-24-24A40,40,0,0,0,8,136a8,8,0,0,0,0,16,24,24,0,0,1,24,24,40,40,0,0,0,40,40H96v16a8,8,0,0,0,16,0V192a24,24,0,0,1,48,0v40a8,8,0,0,0,16,0V192a39.8,39.8,0,0,0-8.44-24.53A56.06,56.06,0,0,0,216,112v-8A58.14,58.14,0,0,0,208.31,75.68ZM200,112a40,40,0,0,1-40,40H112a40,40,0,0,1-40-40v-8a41.74,41.74,0,0,1,6.9-22.48A8,8,0,0,0,80,73.83a43.81,43.81,0,0,1,.79-33.58,43.88,43.88,0,0,1,32.32,20.06A8,8,0,0,0,119.82,64h32.35a8,8,0,0,0,6.74-3.69,43.87,43.87,0,0,1,32.32-20.06A43.81,43.81,0,0,1,192,73.83a8.09,8.09,0,0,0,1,7.65A41.72,41.72,0,0,1,200,104Z"/></svg>
+      </a>
+    </div>
   </div>
-  <div class="st"><i></i>SYS.ONLINE</div>
 </nav>
 
-<!-- ============ 01 HERO : 3D 粒子宇宙 ============ -->
-<section id="s-hero">
-  <canvas id="hero-canvas"></canvas>
-  <div class="hud" id="hud">
-    <div>NODE&nbsp; <b>AYFCW-01</b></div>
-    <div>LAT&nbsp;&nbsp;&nbsp; <b>22.5431N</b></div>
-    <div>LNG&nbsp;&nbsp;&nbsp; <b>114.0579E</b></div>
-    <div>RENDER <b>WEBGL2</b></div>
-    <div>STATUS <b style="color:#2effb0">ONLINE</b></div>
-  </div>
-  <div class="wrap">
-    <div class="tag" data-fade>01 / PARTICLE UNIVERSE</div>
-    <h1 id="hero-h1"><span class="g" data-rise>AYFCW</span><span class="l2" data-rise>IMMERSIVE</span></h1>
-    <div class="sub" data-fade>一个由 <b>粒子 · 流体 · 3D</b> 构成的沉浸式数字空间，滚动与鼠标皆为入口。</div>
-  </div>
-  <div class="scroll-hint"><span>SCROLL</span><div class="wh"></div></div>
-</section>
+<main>
 
-<!-- ============ 02 MORPH : 粒子转真实 ============ -->
-<section id="s-morph">
-  <div class="wrap">
-    <div class="tag">02 / METAMORPHOSIS</div>
-    <h2 class="big-title ghost" style="font-size:clamp(34px,6vw,80px)">PARTICLE <span class="grad">→ FORM</span></h2>
-    <canvas id="morph-canvas"></canvas>
-    <div class="hint2">数千粒子正在重新凝聚 — 移动鼠标扰动它们</div>
-  </div>
-</section>
+  <!-- ============ Hero ============ -->
+  <section id="hero">
+    <div class="wrap">
+      <div class="kicker reveal">Personal Portfolio · 2026</div>
+      <h1 class="reveal reveal-d1">Sirius<span class="star">✦</span></h1>
+      <p class="lede reveal reveal-d2">你好，我是 <b>Sirius</b> —— 一名独立开发者。<br>专注把 AI 能力做成趁手的工具，把踩过的坑变成可复用的方法。</p>
+      <div class="cta-row reveal reveal-d3">
+        <a class="btn btn-p" href="#work">查看作品</a>
+        <a class="btn btn-o" href="#contact">联系我</a>
+      </div>
+    </div>
+  </section>
 
-<!-- ============ 03 FLUID : 朦胧流体交融 ============ -->
-<section id="s-fluid">
-  <canvas id="fluid-canvas"></canvas>
-  <div class="wrap">
-    <div class="tag">03 / LIQUID MOTION</div>
-    <h2 class="big-title">MOLTEN <span class="grad">FLUID</span></h2>
-    <div class="sub" style="margin:20px auto 0">朦胧流体在屏幕中 <b>交融 · 呼吸 · 追随</b> 你的光标。</div>
-  </div>
-</section>
+  <!-- ============ 作品 ============ -->
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2 class="sec-title">Selected Work</h2>
+        <div class="sec-note">精选项目与作品，持续更新中。</div>
+      </div>
+      <div class="work-list">
 
-<!-- ============ 04 CORE : 3D 呼吸球 ============ -->
-<section id="s-3d">
-  <canvas id="obj-canvas"></canvas>
-  <div class="wrap">
-    <div class="tag">04 / BREATHING CORE</div>
-    <h2 class="big-title">REACTIVE <span class="ghost">CORE</span></h2>
-    <div class="sub" style="margin:20px auto 0">WebGL2 着色器驱动的 <b>呼吸内核</b> — 滚动拉近镜头，鼠标转动视角。</div>
-  </div>
-</section>
+        <a class="work-item reveal" href="https://github.com/ayfcw/daily-work-review" target="_blank" rel="noopener">
+          <div class="w-year">2026</div>
+          <div>
+            <div class="w-title">Daily Work Review</div>
+            <div class="w-desc">每天自动复盘与 AI 的对话，把「踩过的坑」提炼成可复用的记忆与 Skill，让经验自动沉淀。</div>
+            <div class="w-tags"><span>AI</span><span>Skill</span><span>自动化</span></div>
+          </div>
+          <div class="w-arrow"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></svg></div>
+        </a>
 
-<!-- ============ 05 CTA : 呼吸大字 ============ -->
-<section id="s-cta">
-  <div class="wrap" style="text-align:center">
-    <div class="tag" style="justify-content:center">05 / CONTACT</div>
-    <h2 class="big-title"><span class="l1">LET'S BUILD</span><br><span class="l2">THE FUTURE</span></h2>
-    <a href="#" class="btn"><span>START A PROJECT</span></a>
-    <footer>
-      <div>© 2026 <b>AYFCW</b> — ALL SYSTEMS NOMINAL</div>
-      <div>THREE.JS · WEBGL2 · GSAP · CANVAS</div>
-      <div>SERVED VIA <b>GITHUB PAGES</b></div>
-    </footer>
-  </div>
-</section>
+        <!-- TODO: 替换为你的真实作品 -->
+        <div class="work-item reveal">
+          <div class="w-year">20XX</div>
+          <div>
+            <div class="w-title">项目二 · 待补充</div>
+            <div class="w-desc">一句话描述这个作品：它解决什么问题、用什么技术、有什么亮点。</div>
+            <div class="w-tags"><span>待补充</span></div>
+          </div>
+          <div class="w-arrow"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></svg></div>
+          </div>
+        </div>
 
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+        <div class="work-item reveal">
+          <div class="w-year">20XX</div>
+          <div>
+            <div class="w-title">项目三 · 待补充</div>
+            <div class="w-desc">一句话描述这个作品：它解决什么问题、用什么技术、有什么亮点。</div>
+            <div class="w-tags"><span>待补充</span></div>
+          </div>
+          <div class="w-arrow"><svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></svg></div>
+          </div>
+        </div>
 
-<script type="module">
-import * as THREE from 'three';
+      </div>
+    </div>
+  </section>
 
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const mouse = {x:0, y:0};            // -1..1
-const mousePx = {x:-9999, y:-9999};
-addEventListener('mousemove', e=>{
-  mouse.x = e.clientX/innerWidth*2 - 1;
-  mouse.y = -(e.clientY/innerHeight*2 - 1);
-  mousePx.x = e.clientX; mousePx.y = e.clientY;
-});
-const DPR = Math.min(devicePixelRatio||1, 2);
+  <!-- ============ 关于 ============ -->
+  <section id="about">
+    <div class="wrap about-grid">
+      <div class="about-label reveal">About</div>
+      <div class="about-body">
+        <!-- TODO: 替换为你的真实介绍 -->
+        <p class="reveal">你好，我是 <b>Sirius</b>。一名独立开发者，享受把模糊的想法变成稳定可用的工具。我相信「踩过的坑」值得被认真沉淀——它们会变成方法、流程，甚至一套可复用的技能。</p>
+        <p class="reveal reveal-d1">目前主要围绕 <b>AI 应用与自动化</b> 做探索，也持续维护自己的工具与开源项目。欢迎交流。</p>
+        <div class="focus-row reveal reveal-d2">
+          <span>AI 工具开发</span>
+          <span>流程自动化</span>
+          <span>效率系统</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-/* ================= Lenis + GSAP ================= */
-const lenis = new Lenis({duration:1.15, smoothWheel:true});
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add(t=>lenis.raf(t*1000));
-gsap.ticker.lagSmoothing(0);
-lenis.stop();
+  <!-- ============ 联系（夜空） ============ -->
+  <section id="contact">
+    <div class="stars" aria-hidden="true">
+      <i style="left:12%;top:22%;animation-delay:0s"></i>
+      <i style="left:24%;top:64%;animation-delay:.9s"></i>
+      <i style="left:38%;top:14%;animation-delay:1.6s"></i>
+      <i style="left:56%;top:38%;animation-delay:.4s"></i>
+      <i style="left:70%;top:70%;animation-delay:2.1s"></i>
+      <i style="left:84%;top:26%;animation-delay:1.2s"></i>
+      <i style="left:92%;top:58%;animation-delay:.6s"></i>
+    </div>
+    <div class="wrap">
+      <div class="c-kicker reveal">Get in touch</div>
+      <h2 class="c-title reveal reveal-d1">一起做点什么？</h2>
+      <p class="c-sub reveal reveal-d2">如果你有想法、问题，或想聊聊 AI 与自动化，欢迎找我。</p>
+      <div class="c-links reveal reveal-d3">
+        <a class="c-btn gh" href="https://github.com/ayfcw" target="_blank" rel="noopener">
+          <svg width="19" height="19" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208.31,75.68A59.78,59.78,0,0,0,202.93,28,8,8,0,0,0,196,24a59.75,59.75,0,0,0-48,24H124A59.75,59.75,0,0,0,76,24a8,8,0,0,0-6.93,4,59.78,59.78,0,0,0-5.38,47.68A58.14,58.14,0,0,0,56,104v8a56.06,56.06,0,0,0,48.44,55.47A39.8,39.8,0,0,0,96,192v8H72a24,24,0,0,1-24-24A40,40,0,0,0,8,136a8,8,0,0,0,0,16,24,24,0,0,1,24,24,40,40,0,0,0,40,40H96v16a8,8,0,0,0,16,0V192a24,24,0,0,1,48,0v40a8,8,0,0,0,16,0V192a39.8,39.8,0,0,0-8.44-24.53A56.06,56.06,0,0,0,216,112v-8A58.14,58.14,0,0,0,208.31,75.68ZM200,112a40,40,0,0,1-40,40H112a40,40,0,0,1-40-40v-8a41.74,41.74,0,0,1,6.9-22.48A8,8,0,0,0,80,73.83a43.81,43.81,0,0,1,.79-33.58,43.88,43.88,0,0,1,32.32,20.06A8,8,0,0,0,119.82,64h32.35a8,8,0,0,0,6.74-3.69,43.87,43.87,0,0,1,32.32-20.06A43.81,43.81,0,0,1,192,73.83a8.09,8.09,0,0,0,1,7.65A41.72,41.72,0,0,1,200,104Z"/></svg>
+          GitHub · @ayfcw
+        </a>
+        <!-- TODO: 替换为你的真实邮箱 -->
+        <a class="c-btn" href="mailto:hello@example.com">邮箱 · 待补充</a>
+      </div>
+      <p class="c-mail">Sirius — 让每一行代码都有它的去处。</p>
+      <footer>
+        <div>© 2026 <b>Sirius</b> — 保留所有权利</div>
+        <div>Powered by <b>GitHub Pages</b></div>
+      </footer>
+    </div>
+  </section>
 
-/* ================= 动画注册表 ================= */
-const anims = [];
-const io = new IntersectionObserver(es=>{
-  es.forEach(en=>{ const a=anims.find(x=>x.el===en.target); if(a) a.active=en.isIntersecting; });
-},{threshold:0.18});
-function reg(el, render){ const a={el, render, active:false}; anims.push(a); io.observe(el); return a; }
-let clock = 0;
-(function loop(){
-  requestAnimationFrame(loop);
-  clock += 0.016;
-  for(const a of anims){ if(a.active) a.render(clock); }
-})();
+</main>
 
-/* ================= 预加载 + 入场 ================= */
-const preloader = document.getElementById('preloader');
-const pctEl = document.getElementById('pct');
-const barEl = document.querySelector('#preloader .pb i');
-const heroH1 = document.querySelectorAll('#hero-h1 [data-rise]');
-const heroFades = document.querySelectorAll('#s-hero [data-fade], .logo, .hud, nav .lk a');
+<script>
+  (function(){
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function boot(){
-  const obj={v:0};
-  const tl=gsap.timeline({onUpdate:()=>{ obj.v=Math.min(100,Math.round(obj.v*1.5)); pctEl.textContent=obj.v; barEl.style.transform='scaleX('+(obj.v/100)+')'; }});
-  tl.to(obj,{v:100,duration:1.5,ease:'power2.inOut'});
-  tl.to(preloader,{yPercent:-100,duration:.9,ease:'power4.inOut',delay:.1}).set(preloader,{display:'none'});
-  tl.fromTo(heroH1,{yPercent:120},{yPercent:0,duration:1.2,stagger:.14,ease:'power4.out'},'-=.4');
-  tl.fromTo(heroFades,{opacity:0},{opacity:1,duration:.8,stagger:.07},'-=.8');
-  tl.add(()=>lenis.start(), '-=.3');
-}
-if(reduce){ pctEl.textContent='100'; preloader.style.display='none'; gsap.set(heroH1,{yPercent:0}); gsap.set(heroFades,{opacity:1}); lenis.start(); }
-else boot();
+    /* 导航滚动样式 */
+    const nav = document.getElementById('nav');
+    const onScroll = () => nav.classList.toggle('sc', scrollY > 24);
+    addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
 
-/* 导航滚动样式 + 当前区块指示 */
-const nav=document.getElementById('nav');
-const idxEl=document.getElementById('idx');
-const sections=['s-hero','s-morph','s-fluid','s-3d','s-cta'];
-const stMap={};
-sections.forEach((id,i)=>stMap[id]=String(i+1).padStart(2,'0'));
-addEventListener('scroll',()=>{
-  nav.classList.toggle('sc', scrollY>40);
-  const y=scrollY+innerHeight*0.5;
-  let cur='01';
-  for(const id of sections){ const el=document.getElementById(id); if(y>=el.offsetTop) cur=stMap[id]; }
-  idxEl.textContent=cur;
-},{passive:true});
-
-/* 光标光晕 */
-const glow=document.getElementById('glow');
-let gx=innerWidth/2,gy=innerHeight/2;
-(function gl(){ gx+=(mousePx.x-gx)*.07; gy+=(mousePx.y-gy)*.07; glow.style.transform='translate('+(gx-320)+'px,'+(gy-320)+'px)'; requestAnimationFrame(gl); })();
-
-/* ============================================================
-   01 HERO — Three.js 3D 粒子宇宙（自定义 Shader，呼吸 + 鼠标镜头）
-============================================================ */
-(function hero(){
-  const canvas=document.getElementById('hero-canvas');
-  let renderer,scene,cam,points,uniforms;
-  try{
-    renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-    scene=new THREE.Scene();
-    cam=new THREE.PerspectiveCamera(70,1,0.1,100);
-    cam.position.z=7;
-    const N=4200;
-    const pos=new Float32Array(N*3), sc=new Float32Array(N), mix=new Float32Array(N);
-    for(let i=0;i<N;i++){
-      const r=2.4+Math.pow(Math.random(),1.4)*3.2;
-      const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
-      const i3=i*3;
-      pos[i3]=r*Math.sin(ph)*Math.cos(th);
-      pos[i3+1]=r*Math.sin(ph)*Math.sin(th);
-      pos[i3+2]=r*Math.cos(ph);
-      sc[i]=0.5+Math.random()*1.8;
-      mix[i]=Math.random();
+    /* 滚动揭示：只在非 reduced-motion 时启动观察器 */
+    if(!reduce){
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+        });
+      }, {threshold:0.12, rootMargin:'0px 0px -6% 0px'});
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    }else{
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
     }
-    const geo=new THREE.BufferGeometry();
-    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    geo.setAttribute('aScale',new THREE.BufferAttribute(sc,1));
-    geo.setAttribute('aMix',new THREE.BufferAttribute(mix,1));
-    uniforms={uTime:{value:0},uSize:{value:70*DPR},uPixelRatio:{value:DPR}};
-    const mat=new THREE.ShaderMaterial({
-      uniforms,
-      transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,
-      vertexShader:`
-        attribute float aScale; attribute float aMix;
-        uniform float uTime; uniform float uSize; uniform float uPixelRatio;
-        varying float vMix; varying float vA;
-        void main(){
-          vMix=aMix; vA=aScale;
-          vec3 p=position;
-          float br=1.0+0.07*sin(uTime*1.35);
-          p*=br;
-          float ang=uTime*0.06;
-          float ca=cos(ang),sa=sin(ang);
-          p.xz=mat2(ca,-sa,sa,ca)*p.xz;
-          vec4 mv=modelViewMatrix*vec4(p,1.0);
-          gl_PointSize=aScale*uSize*uPixelRatio/-mv.z;
-          gl_Position=projectionMatrix*mv;
-        }`,
-      fragmentShader:`
-        uniform float uTime; varying float vMix; varying float vA;
-        void main(){
-          vec2 c=gl_PointCoord-0.5; float d=length(c);
-          float al=smoothstep(0.5,0.0,d); al*=al;
-          vec3 cyan=vec3(0.0,0.9,1.0), violet=vec3(0.55,0.38,1.0);
-          vec3 col=mix(cyan,violet,vMix);
-          float tw=0.7+0.4*sin(uTime*2.2+vA*6.0);
-          gl_FragColor=vec4(col,al*tw*0.9);
-        }`
-    });
-    points=new THREE.Points(geo,mat);
-    scene.add(points);
-    resize();
-  }catch(err){ console.warn('hero 3d init failed',err); }
-  function resize(){
-    if(!renderer)return;
-    const w=canvas.clientWidth||innerWidth, h=canvas.clientHeight||innerHeight;
-    renderer.setPixelRatio(DPR); renderer.setSize(w,h,false);
-    cam.aspect=w/h; cam.updateProjectionMatrix();
-  }
-  addEventListener('resize',resize);
-  reg(document.getElementById('s-hero'),t=>{
-    if(!renderer)return;
-    uniforms.uTime.value=t;
-    cam.position.x+=(mouse.x*0.9-cam.position.x)*0.05;
-    cam.position.y+=(-mouse.y*0.55-cam.position.y)*0.05;
-    cam.lookAt(0,0,0);
-    renderer.render(scene,cam);
-  });
-})();
-
-/* ============================================================
-   02 MORPH — 粒子转真实（Canvas 2D，散点凝聚成文字）
-============================================================ */
-(async function morph(){
-  const canvas=document.getElementById('morph-canvas');
-  const ctx=canvas.getContext('2d');
-  let W,H,DPR2=DPR, targets=[], pts=[], morphing=false, formed=false;
-  const C=document.createElement('canvas'); C.width=880; C.height=380;
-  const c2=C.getContext('2d',{willReadFrequently:true});
-  function sample(){
-    try{ document.fonts.load('900 210px Orbitron'); }catch(e){}
-    c2.clearRect(0,0,C.width,C.height);
-    c2.fillStyle='#fff';
-    c2.font='900 210px Orbitron, sans-serif';
-    c2.textAlign='center'; c2.textBaseline='middle';
-    c2.fillText('AYFCW',C.width/2,C.height/2+10);
-    const d=c2.getImageData(0,0,C.width,C.height).data;
-    const t=[];
-    for(let y=0;y<C.height;y+=3){
-      for(let x=0;x<C.width;x+=3){
-        if(d[(y*C.width+x)*4+3]>128) t.push({x,y});
-      }
-    }
-    return t;
-  }
-  function resize(){
-    const r=canvas.getBoundingClientRect();
-    W=Math.max(320,r.width); H=Math.max(160,r.height);
-    canvas.width=W*DPR2; canvas.height=H*DPR2;
-    ctx.setTransform(DPR2,0,0,DPR2,0,0);
-    initPts();
-  }
-  function initPts(){
-    const raw=sample();
-    if(raw.length<200){ // 字体未就绪，等待后重试
-      setTimeout(resize,150); return;
-    }
-    targets=raw;
-    const sx=W/C.width, sy=H/C.height;
-    targets.forEach(p=>{ p.tx=p.x*sx; p.ty=p.y*sy; });
-    pts=[];
-    for(let i=0;i<targets.length;i++){
-      pts.push({
-        x:Math.random()*W, y:Math.random()*H,
-        tx:targets[i].tx, ty:targets[i].ty,
-        ph:Math.random()*Math.PI*2, sp:0.5+Math.random(),
-        cx:targets[i].tx, cy:targets[i].ty   // 呼吸中心
-      });
-    }
-  }
-  resize();
-  addEventListener('resize',resize);
-  reg(document.getElementById('s-morph'),t=>{
-    ctx.clearRect(0,0,W,H);
-    ctx.globalCompositeOperation='lighter';
-    for(const p of pts){
-      if(morphing){
-        p.x+=(p.tx-p.x)*0.055;
-        p.y+=(p.ty-p.y)*0.055;
-      }
-      // 呼吸：目标位置轻微脉动
-      const b=Math.sin(t*p.sp+p.ph)*1.6;
-      const px=p.tx+b, py=p.ty+Math.cos(t*p.sp*1.3+p.ph)*1.2;
-      // 鼠标排斥
-      const dx=p.x-mousePx.x, dy=p.y-mousePx.y;
-      const dd=Math.hypot(dx,dy);
-      if(dd<110 && dd>0.01){ p.x+=dx/dd*2.2; p.y+=dy/dd*2.2; }
-      ctx.fillStyle='rgba(0,229,255,.9)';
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,1.6,0,Math.PI*2);
-      ctx.fill();
-      ctx.fillStyle='rgba(139,92,246,.35)';
-      ctx.beginPath();
-      ctx.arc(px,py,3.4,0,Math.PI*2);
-      ctx.fill();
-    }
-    ctx.globalCompositeOperation='source-over';
-  });
-  ScrollTrigger.create({
-    trigger:'#s-morph',
-    onEnter:()=>{ if(!morphing){ morphing=true; } },
-    onLeaveBack:()=>{ morphing=false; }
-  });
-  /* 进入后再确认字体已就绪，重采样 */
-  try{ await document.fonts.ready; setTimeout(()=>{ resize(); morphing=true; }, 120); }catch(e){}
-})();
-
-/* ============================================================
-   03 FLUID — 朦胧流体交融（Canvas 2D，径向渐变 + lighter + 呼吸）
-============================================================ */
-(function fluid(){
-  const canvas=document.getElementById('fluid-canvas');
-  const ctx=canvas.getContext('2d');
-  let W,H;
-  const cols=[[0,229,255],[139,92,246],[255,61,129],[0,160,255],[180,90,255]];
-  let blobs=[];
-  function resize(){
-    W=innerWidth; H=innerHeight;
-    canvas.width=W*DPR; canvas.height=H*DPR;
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-    const n=W<820?9:13;
-    blobs=[];
-    for(let i=0;i<n;i++){
-      blobs.push({
-        x:Math.random()*W, y:Math.random()*H,
-        vx:(Math.random()-.5)*0.55, vy:(Math.random()-.5)*0.55,
-        r0:70+Math.random()*150,
-        col:cols[i%cols.length],
-        al:0.06+Math.random()*0.06,
-        sp:0.4+Math.random()*0.8, ph:Math.random()*Math.PI*2
-      });
-    }
-  }
-  resize();
-  addEventListener('resize',resize);
-  reg(document.getElementById('s-fluid'),t=>{
-    ctx.clearRect(0,0,W,H);
-    ctx.globalCompositeOperation='lighter';
-    for(const b of blobs){
-      // 呼吸半径
-      const r=b.r0*(1+0.16*Math.sin(t*b.sp+b.ph));
-      // 鼠标交互：接近则轻微吸引/环绕
-      const dx=b.x-mousePx.x, dy=b.y-mousePx.y;
-      const dd=Math.hypot(dx,dy);
-      if(dd<300 && dd>1){
-        b.vx-=(dx/dd)*0.02; b.vy-=(dy/dd)*0.02;
-        b.vx*=0.995; b.vy*=0.995;
-      }
-      b.x+=b.vx; b.y+=b.vy;
-      if(b.x<-r)b.x=W+r; if(b.x>W+r)b.x=-r;
-      if(b.y<-r)b.y=H+r; if(b.y>H+r)b.y=-r;
-      const c=b.col;
-      const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,r);
-      g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},${b.al*2.2})`);
-      g.addColorStop(0.5,`rgba(${c[0]},${c[1]},${c[2]},${b.al})`);
-      g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);
-      ctx.fillStyle=g;
-      ctx.beginPath(); ctx.arc(b.x,b.y,r,0,Math.PI*2); ctx.fill();
-    }
-    ctx.globalCompositeOperation='source-over';
-  });
-})();
-
-/* ============================================================
-   04 CORE — WebGL2 呼吸球 + 轨道粒子（Three.js Shader）
-============================================================ */
-(function core(){
-  const canvas=document.getElementById('obj-canvas');
-  let renderer,scene,cam,group,sphereMat,orbit,coreMat;
-  try{
-    renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-    scene=new THREE.Scene();
-    cam=new THREE.PerspectiveCamera(55,1,0.1,100);
-    cam.position.set(0,0,7.5);
-    group=new THREE.Group(); scene.add(group);
-    /* 呼吸球 */
-    sphereMat=new THREE.ShaderMaterial({
-      uniforms:{uTime:{value:0}},
-      transparent:true,
-      vertexShader:`
-        uniform float uTime; varying vec3 vN; varying vec3 vV;
-        void main(){
-          vec3 p=position;
-          float w=sin(p.x*2.2+uTime*1.6)*0.5+sin(p.y*1.8-uTime*1.15)*0.5+sin(p.z*2.6+uTime*2.05)*0.5;
-          w*=0.5;
-          float breath=1.0+0.11*sin(uTime*1.2)+0.06*w;
-          p*=breath;
-          vN=normalize(normalMatrix*normal);
-          vec4 mv=modelViewMatrix*vec4(p,1.0);
-          vV=-mv.xyz;
-          gl_Position=projectionMatrix*mv;
-        }`,
-      fragmentShader:`
-        uniform float uTime; varying vec3 vN; varying vec3 vV;
-        void main(){
-          vec3 N=normalize(vN), V=normalize(vV);
-          float fres=pow(1.0-max(dot(N,V),0.0),2.4);
-          vec3 cyan=vec3(0.0,0.92,1.0), violet=vec3(0.55,0.38,1.0);
-          vec3 col=mix(vec3(0.03,0.05,0.13), cyan, fres*0.85);
-          col+=violet*fres*0.55;
-          float glow=0.30+fres*0.7;
-          gl_FragColor=vec4(col,glow);
-        }`
-    });
-    const sph=new THREE.Mesh(new THREE.IcosahedronGeometry(1.5,64),sphereMat);
-    group.add(sph);
-    /* 内层能量核 */
-    coreMat=new THREE.ShaderMaterial({
-      uniforms:{uTime:{value:0}},
-      transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,
-      vertexShader:`uniform float uTime;void main(){vec3 p=position*(1.0+0.05*sin(uTime*2.4));gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}`,
-      fragmentShader:`uniform float uTime;void main(){vec2 c=gl_PointCoord-0.5;float d=length(c);float a=smoothstep(0.5,0.0,d);a*=a;vec3 col=mix(vec3(0.0,0.7,1.0),vec3(1.0,1.0,1.0),0.4+0.3*sin(uTime*3.0));gl_FragColor=vec4(col,a*0.95);}`
-    });
-    const core=new THREE.Points(new THREE.SphereGeometry(0.62,32,32),coreMat);
-    group.add(core);
-    /* 外圈网格球（呼吸，线条） */
-    const wire=new THREE.LineSegments(
-      new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(1.85,10)),
-      new THREE.LineBasicMaterial({color:0x00e5ff,transparent:true,opacity:0.12})
-    );
-    group.add(wire);
-    /* 轨道粒子环 */
-    const RN=320;
-    const rp=new Float32Array(RN*3);
-    for(let i=0;i<RN;i++){ const a=i/RN*Math.PI*2; const rad=2.5+Math.random()*0.15; rp[i*3]=Math.cos(a)*rad; rp[i*3+1]=Math.sin(a)*rad*0.35; rp[i*3+2]=Math.sin(a)*rad; }
-    const rg=new THREE.BufferGeometry();
-    rg.setAttribute('position',new THREE.BufferAttribute(rp,3));
-    const orbm=new THREE.PointsMaterial({color:0x00e5ff,size:0.028,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false});
-    orbit=new THREE.Points(rg,orbm);
-    group.add(orbit);
-    resize();
-  }catch(err){ console.warn('core 3d init failed',err); }
-  function resize(){
-    if(!renderer)return;
-    const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;
-    renderer.setPixelRatio(DPR); renderer.setSize(w,h,false);
-    cam.aspect=w/h; cam.updateProjectionMatrix();
-  }
-  addEventListener('resize',resize);
-  reg(document.getElementById('s-3d'),t=>{
-    if(!renderer)return;
-    if(sphereMat)sphereMat.uniforms.uTime.value=t;
-    if(coreMat)coreMat.uniforms.uTime.value=t;
-    if(orbit){ orbit.rotation.y=t*0.12; orbit.rotation.x=Math.sin(t*0.3)*0.05; }
-    group.rotation.y+=(mouse.x*0.6-group.rotation.y)*0.05;
-    group.rotation.x+=(mouse.y*0.35-group.rotation.x)*0.05;
-    renderer.render(scene,cam);
-  });
-  /* 滚动：镜头推近（镜头变化） */
-  gsap.to(cam.position,{z:3.6,ease:'none',
-    scrollTrigger:{trigger:'#s-3d',start:'top bottom',end:'top top',scrub:1.2}});
-})();
-
-/* ================= 磁吸按钮 + 锚点滚动 ================= */
-document.querySelectorAll('.btn').forEach(b=>{
-  b.addEventListener('mousemove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-(r.left+r.width/2))*.18}px,${(e.clientY-(r.top+r.height/2))*.18}px)`;});
-  b.addEventListener('mouseleave',()=>b.style.transform='');
-});
-document.querySelectorAll('nav .lk a').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    const el=document.querySelector(a.getAttribute('href'));
-    if(el&&window.lenis)lenis.scrollTo(el,{offset:-10,duration:1.4});
-  });
-});
-ScrollTrigger.refresh();
+  })();
 </script>
 </body>
 </html>
