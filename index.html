@@ -741,7 +741,7 @@
       var vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14');
       var fileset = await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
       landmarker = await vision.HandLandmarker.createFromOptions(fileset, {
-        baseOptions:{ modelAssetPath:'assets/hand_landmarker.task', delegate:'CPU' },
+        baseOptions:{ modelAssetPath:'https://cdn.jsdelivr.net/gh/ayfcw/ayfcw.github.io@main/assets/hand_landmarker.task', delegate:'CPU' },
         runningMode:'VIDEO', numHands:2,
         minHandDetectionConfidence:0.5, minHandPresenceConfidence:0.5
       });
